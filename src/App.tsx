@@ -6,6 +6,8 @@
 import { useState } from 'react';
 import { HeroSection } from './components/HeroSection';
 import { ProcessSection } from './components/ProcessSection';
+import { SupportScaleSection } from './components/SupportScaleSection';
+import { ProblemSolutionSection } from './components/ProblemSolutionSection';
 import { ConsultModal } from './components/ConsultModal';
 
 export default function App() {
@@ -16,6 +18,8 @@ export default function App() {
       <HeroSection onBookConsult={() => setIsConsultOpen(true)} />
       <ProcessSection previewTheme="dark" />
       <ProcessSection previewTheme="light" />
+      <SupportScaleSection />
+      <ProblemSolutionSection onBookConsult={() => setIsConsultOpen(true)} />
       <ConsultModal
         isOpen={isConsultOpen}
         onClose={() => setIsConsultOpen(false)}

@@ -30,4 +30,10 @@
     mask-image: radial-gradient(ellipse 62% 58% at 50% 48%, black 35%, transparent 78%);
     -webkit-mask-image: radial-gradient(ellipse 62% 58% at 50% 48%, black 35%, transparent 78%);
   }
+
+  .infra-dot-light {
+    background-color: #f8fafc;
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
 }

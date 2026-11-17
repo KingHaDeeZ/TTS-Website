@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { AnimatePresence, motion, MotionConfig } from 'motion/react';
 import {
   Activity,
   CalendarRange,
   Check,
+  ChevronUp,
   Cloud,
   Code2,
   Compass,
@@ -145,6 +147,8 @@ interface ProcessStep {
   number: string;
   title: string;
   description?: string;
+  summary: string;
+  color: StudioColorKey;
 }
 
 const PROCESS_STEPS: ProcessStep[] = [
@@ -153,28 +157,38 @@ const PROCESS_STEPS: ProcessStep[] = [
     title: 'Discovery & Strategy',
     description:
       'We map your processes, goals and budget, then scope a clear, fixed-price plan.',
+    summary: '6 milestones · Fixed price',
+    color: 'pink',
   },
   {
     number: '02',
     title: 'Sprint Planning',
     description:
       'Your project is broken into fortnightly sprints with a shared timeline you can follow.',
+    summary: '6 sprints · 12 weeks',
+    color: 'amber',
   },
   {
     number: '03',
     title: 'Design & Build',
     description:
       'UX/UI design and development of your web or mobile app, with a demo every sprint.',
+    summary: 'KPIs · Chart · DevTools',
+    color: 'green',
   },
   {
     number: '04',
     title: 'Integrations',
     description:
       'Connect your new software to Xero, MYOB, Shopify, your CRM and other existing tools.',
+    summary: 'Xero · MYOB · Shopify · CRM',
+    color: 'sky',
   },
   {
     number: '05',
     title: 'Testing & Launch',
+    summary: 'QA & go-live',
+    color: 'blue',
   },
 ];
 
@@ -446,7 +460,15 @@ export function ProcessSection({ previewTheme = 'dark' }: ProcessSectionProps) {
   const isLight = previewTheme === 'light';
   const accents = STUDIO_ACCENTS_BY_THEME[previewTheme];
 
-  const [activeStep, setActiveStep] = useState<string>('01');
+  const [stackOrder, setStackOrder] = useState<string[]>(['01']);
+  const activeStep = stackOrder[stackOrder.length - 1];
+  const collapsedSteps = stackOrder.slice(0, -1);
+
+  const handleSelectStep = (stepNumber: string) => {
+    if (stepNumber === activeStep) return;
+    setStackOrder((prev) => [...prev.filter((id) => id !== stepNumber), stepNumber]);
+  };
+
   const [selectedMilestone, setSelectedMilestone] = useState<string>('audit');
   const [selectedSprint, setSelectedSprint] = useState<string>('s3');
   const [selectedBuildMetric, setSelectedBuildMetric] =
@@ -503,7 +525,7 @@ export function ProcessSection({ previewTheme = 'dark' }: ProcessSectionProps) {
                 <button
                   key={step.number}
                   type="button"
-                  onClick={() => setActiveStep(step.number)}
+                  onClick={() => handleSelectStep(step.number)}
                   aria-expanded={isActive}
                   className={`w-full text-left rounded-xl px-5 py-4 transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 ${
                     isActive
@@ -539,15 +561,90 @@ export function ProcessSection({ previewTheme = 'dark' }: ProcessSectionProps) {
             })}
           </div>
 
-          {/* Right Column: Multi-Color Preview Panel (Dark or Light Mode) */}
+          {/* Right Column: Stacking Card Reference Deck (Dark or Light Mode) */}
           <div className="lg:col-span-7">
-            <div
-              className={`rounded-2xl overflow-hidden border ${
-                isLight
-                  ? 'bg-white border-slate-200/90 shadow-[0_24px_54px_-18px_rgba(15,23,42,0.12)] text-slate-900'
-                  : 'bg-[#141720] border-white/10 shadow-[0_28px_60px_-20px_rgba(15,23,42,0.38)] text-slate-100'
-              }`}
-            >
+            <MotionConfig reducedMotion="user">
+              <div className="relative">
+                {/* Collapsed Previous Reference Cards */}
+                {collapsedSteps.length > 0 && (
+                  <div className="relative z-10 flex flex-col">
+                    <AnimatePresence initial={false}>
+                      {collapsedSteps.map((stepNum, index) => {
+                        const stepInfo = PROCESS_STEPS.find((s) => s.number === stepNum);
+                        if (!stepInfo) return null;
+                        const depthFromFront = collapsedSteps.length - index;
+                        const insetClass =
+                          depthFromFront === 1
+                            ? 'mx-2'
+                            : depthFromFront === 2
+                              ? 'mx-4'
+                              : depthFromFront === 3
+                                ? 'mx-6'
+                                : 'mx-8';
+                        const stepAccent = accents[stepInfo.color];
+
+                        return (
+                          <motion.button
+                            key={stepNum}
+                            type="button"
+                            layout
+                            initial={{ opacity: 0, height: 0, y: 10 }}
+                            animate={{ opacity: 1, height: 'auto', y: 0 }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+                            onClick={() => handleSelectStep(stepNum)}
+                            aria-label={`Bring ${stepInfo.number} ${stepInfo.title} to top of stack`}
+                            className={`${insetClass} -mb-2.5 pb-4 pt-2.5 px-4 rounded-t-2xl border text-left transition-colors cursor-pointer flex items-center justify-between gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 ${
+                              isLight
+                                ? 'bg-[#F8FAFC] border-slate-200/95 hover:bg-white hover:border-slate-300 text-slate-800 shadow-[0_-4px_14px_-6px_rgba(15,23,42,0.08)]'
+                                : 'bg-[#10131B] border-white/10 hover:bg-[#171B26] hover:border-white/25 text-slate-200 shadow-[0_-6px_20px_-6px_rgba(0,0,0,0.45)]'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <span
+                                className={`font-mono text-[11px] font-medium tabular-nums shrink-0 ${stepAccent.text}`}
+                              >
+                                {stepInfo.number}
+                              </span>
+                              <span className="text-xs font-semibold truncate">
+                                {stepInfo.title}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-2.5 shrink-0">
+                              <span
+                                className={`hidden sm:inline font-mono text-[10.5px] tabular-nums ${
+                                  isLight ? 'text-slate-500' : 'text-slate-400'
+                                }`}
+                              >
+                                {stepInfo.summary}
+                              </span>
+                              <ChevronUp
+                                className={`h-3.5 w-3.5 ${
+                                  isLight ? 'text-slate-400' : 'text-slate-500'
+                                }`}
+                                aria-hidden="true"
+                              />
+                            </div>
+                          </motion.button>
+                        );
+                      })}
+                    </AnimatePresence>
+                  </div>
+                )}
+
+                {/* Active Top Reference Card Landing on Stack */}
+                <motion.div
+                  key={activeStep}
+                  initial={{ opacity: 0, y: -26, scale: 0.975 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}
+                  className={`relative z-20 rounded-2xl overflow-hidden border ${
+                    isLight
+                      ? 'bg-white border-slate-200/90 shadow-[0_24px_54px_-18px_rgba(15,23,42,0.14)] text-slate-900'
+                      : 'bg-[#141720] border-white/10 shadow-[0_28px_60px_-20px_rgba(15,23,42,0.45)] text-slate-100'
+                  }`}
+                >
               {/* Preview Window Chrome with Red, Amber, Green Window Buttons */}
               <div
                 className={`flex items-center justify-between px-5 py-3.5 border-b ${
@@ -2206,7 +2303,9 @@ export function ProcessSection({ previewTheme = 'dark' }: ProcessSectionProps) {
                     </p>
                   </div>
                 )}
-            </div>
+                </motion.div>
+              </div>
+            </MotionConfig>
           </div>
         </div>
       </div>

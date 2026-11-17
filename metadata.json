@@ -1,0 +1,6 @@
+{
+  "name": "TechStack Sydney",
+  "description": "Australian web and mobile app studio building bespoke software for Australian SMEs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

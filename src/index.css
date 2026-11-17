@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #111827;
+    background-color: #eceff5;
+  }
+}
+
+@layer utilities {
+  .hero-mesh-bg {
+    background:
+      radial-gradient(62% 72% at 54% 46%, #f6f2ea 0%, rgba(246, 242, 234, 0) 70%),
+      radial-gradient(65% 75% at 15% 24%, #dfe7f4 0%, rgba(223, 231, 244, 0) 72%),
+      radial-gradient(60% 70% at 88% 82%, #c9d2e6 0%, rgba(201, 210, 230, 0) 75%),
+      linear-gradient(135deg, #e2e8f4 0%, #eef0f2 48%, #d6dceb 100%);
+  }
+
+  .hero-dot-matrix {
+    background-image: radial-gradient(#94a3b8 1px, transparent 1px);
+    background-size: 18px 18px;
+    mask-image: radial-gradient(ellipse 62% 58% at 50% 48%, black 35%, transparent 78%);
+    -webkit-mask-image: radial-gradient(ellipse 62% 58% at 50% 48%, black 35%, transparent 78%);
+  }
+}

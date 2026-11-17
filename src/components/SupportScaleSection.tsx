@@ -1,9 +1,12 @@
 import React, { useId, useState } from 'react';
 import { AnimatePresence, motion, MotionConfig } from 'motion/react';
 import {
-  Activity,
   ArrowRight,
   BarChart3,
+  BellRing,
+  Boxes,
+  Briefcase,
+  Calculator,
   Check,
   ChevronUp,
   Clock,
@@ -11,18 +14,26 @@ import {
   Cpu,
   Database,
   FileCheck2,
+  FileClock,
+  FileText,
   GitMerge,
   Globe,
   HardDrive,
-  Layers,
-  LifeBuoy,
+  KeyRound,
   Lock,
   Mail,
+  MessageSquare,
+  Package,
   Plus,
   PlusSquare,
+  Receipt,
+  Send,
   Server,
   ShieldCheck,
   Sparkles,
+  TrendingUp,
+  Truck,
+  Warehouse,
   Workflow,
   Zap,
 } from 'lucide-react';
@@ -126,7 +137,7 @@ const SUPPORT_STEPS: SupportStep[] = [
     title: 'Analytics & Insights',
     description:
       'Dashboard that shows how your software is used and where to improve.',
-    summary: 'Telemetry · Adoption',
+    summary: 'Invoices · Jobs · Pipeline',
     color: 'sky',
   },
   {
@@ -194,183 +205,405 @@ const HOSTING_CARDS: HostingCard[] = [
   },
 ];
 
+interface ConversationMessage {
+  id: string;
+  sender: 'customer' | 'team';
+  author: string;
+  time: string;
+  text: string;
+}
+
 interface SupportTicket {
   id: string;
   title: string;
+  customer: string;
   category: string;
   responseTime: string;
   status: string;
-  engineer: string;
+  issueSummary: string;
   toolchain: string;
-  summary: string;
-  resolution: string;
   color: StudioColorKey;
+  messages: ConversationMessage[];
 }
 
 const SUPPORT_TICKETS: SupportTicket[] = [
   {
+    id: 'quote-chat',
+    title: 'Live chat & quote automations',
+    customer: 'Jack M. · Parramatta',
+    category: 'Automation',
+    responseTime: '2m ago',
+    status: 'Active',
+    issueSummary: 'Add live chat widget and automated emails for unfinished quote requests.',
+    toolchain: 'n8n · Sender · Supabase',
+    color: 'pink',
+    messages: [
+      {
+        id: 'm1',
+        sender: 'customer',
+        author: 'Jack M.',
+        time: '10:14 AM',
+        text: 'hey mate, can u add live chat and email follow ups for unfinished quote requests?',
+      },
+      {
+        id: 'm2',
+        sender: 'team',
+        author: 'Liam K. · Sydney',
+        time: '10:18 AM',
+        text: "No worries Jack. I've added live chat to your site and set up an n8n workflow with Sender to email unfinished quote requests after 48 hours.",
+      },
+      {
+        id: 'm3',
+        sender: 'customer',
+        author: 'Jack M.',
+        time: '10:20 AM',
+        text: 'nice, can we test it first before it goes live?',
+      },
+      {
+        id: 'm4',
+        sender: 'team',
+        author: 'Liam K. · Sydney',
+        time: '10:21 AM',
+        text: 'Too easy. It is live on your test link in GitLab now. Have a look and let me know when to push it live.',
+      },
+    ],
+  },
+  {
     id: 'xero-retry',
-    title: 'Xero invoice retry queue tuning',
+    title: 'Xero invoice retry queue',
+    customer: 'Sarah T. · Brisbane',
     category: 'Fix',
     responseTime: '14m response',
     status: 'Resolved',
-    engineer: 'Liam K. · Sydney',
-    toolchain: 'Visual Studio Code · GitHub Actions',
-    summary:
-      'Patched in Visual Studio Code with exponential backoff so month-end invoice batches never drop during Xero rate limits.',
-    resolution: 'Shipped via GitHub Actions CI/CD in 38 mins · Verified across 142 invoices',
-    color: 'pink',
+    issueSummary: 'Month-end Xero invoice batch timed out at 9am.',
+    toolchain: 'VS Code · GitHub Actions',
+    color: 'amber',
+    messages: [
+      {
+        id: 'x1',
+        sender: 'customer',
+        author: 'Sarah T.',
+        time: '09:04 AM',
+        text: 'hey r u available to check Xero? our 9am invoices timed out',
+      },
+      {
+        id: 'x2',
+        sender: 'team',
+        author: 'Priya S. · Sydney',
+        time: '09:12 AM',
+        text: 'On it Sarah. I updated the retry rule in VS Code and re-ran the queue. All 142 invoices are now in Xero.',
+      },
+      {
+        id: 'x3',
+        sender: 'customer',
+        author: 'Sarah T.',
+        time: '09:15 AM',
+        text: 'awesome thanks for sorting that fast',
+      },
+    ],
   },
   {
     id: 'sec-patch',
-    title: 'Runtime & dependency security patch',
+    title: 'Security & runtime patch',
+    customer: 'Dave R. · Melbourne',
     category: 'Security',
     responseTime: 'Proactive',
     status: 'Patched',
-    engineer: 'Priya S. · Sydney',
-    toolchain: 'GitLab CI · GitHub Dependabot',
-    summary:
-      'Flagged by automated repository security scanning and patched across staging and production containers.',
-    resolution: 'GitLab pipeline regression suite passed · Zero user disruption',
+    issueSummary: 'Security update applied across production servers.',
+    toolchain: 'GitLab CI · Dependabot',
     color: 'green',
+    messages: [
+      {
+        id: 's1',
+        sender: 'team',
+        author: 'Priya S. · Sydney',
+        time: '08:30 AM',
+        text: 'Morning Dave. GitHub flagged a security update earlier today, so we tested it in GitLab and pushed it live with no downtime.',
+      },
+      {
+        id: 's2',
+        sender: 'customer',
+        author: 'Dave R.',
+        time: '08:41 AM',
+        text: 'cheers priya, didnt notice any issues here',
+      },
+    ],
   },
   {
     id: 'role-perm',
-    title: 'Regional manager approval permissions',
+    title: 'Manager $15k quote sign-off',
+    customer: 'Mitch B. · Newcastle',
     category: 'Update',
     responseTime: '22m response',
     status: 'Resolved',
-    engineer: 'Liam K. · Sydney',
-    toolchain: 'Visual Studio Code · Supabase RLS',
-    summary:
-      'Updated Supabase row-level security policies and UI checks so state managers can approve variations up to $15k.',
-    resolution: 'Committed to GitHub & released same afternoon AEST',
-    color: 'amber',
-  },
-  {
-    id: 'db-tune',
-    title: 'Cloudflare WAF & Supabase index tuning',
-    category: 'Maintenance',
-    responseTime: 'Scheduled',
-    status: 'Completed',
-    engineer: 'Priya S. · Sydney',
-    toolchain: 'Cloudflare · Supabase',
-    summary:
-      'Refined Cloudflare rate-limit rules and refreshed Supabase composite indexes, cutting report loads from 1.4s to 180ms.',
-    resolution: 'Executed Sunday 02:00 AEST maintenance window',
+    issueSummary: 'Raise branch manager quote approval limit from $5k to $15k.',
+    toolchain: 'Supabase RLS · GitHub',
     color: 'sky',
+    messages: [
+      {
+        id: 'r1',
+        sender: 'customer',
+        author: 'Mitch B.',
+        time: 'Yesterday',
+        text: 'hey can u raise manager quote approvals up to $15k for newcastle?',
+      },
+      {
+        id: 'r2',
+        sender: 'team',
+        author: 'Liam K. · Sydney',
+        time: 'Yesterday',
+        text: 'All done Mitch. Updated the Supabase rules and pushed it live via GitHub, so your leads can approve up to $15k now.',
+      },
+    ],
   },
 ];
 
+interface CrmCaseRow {
+  code: string;
+  client: string;
+  meta: string;
+  amount: string;
+  status: string;
+  tone: StudioColorKey;
+}
+
 interface AnalyticsKpi {
-  id: 'adoption' | 'saved' | 'errors';
+  id: 'invoices' | 'jobs' | 'quotes' | 'pipeline';
   label: string;
   value: string;
   delta: string;
+  panelTitle: string;
+  panelSubtitle: string;
   color: StudioColorKey;
   chartPath: string;
   chartAreaPath: string;
   icon: React.ComponentType<{ className?: string }>;
+  rows: CrmCaseRow[];
 }
 
 const ANALYTICS_KPIS: AnalyticsKpi[] = [
   {
-    id: 'adoption',
-    label: 'Daily Active Staff',
-    value: '92%',
-    delta: '312 / 340 active',
-    color: 'blue',
-    chartPath:
-      'M0 64 C35 60, 72 48, 110 42 C148 36, 188 26, 226 18 C258 13, 286 11, 310 9',
-    chartAreaPath:
-      'M0 64 C35 60, 72 48, 110 42 C148 36, 188 26, 226 18 C258 13, 286 11, 310 9 L310 88 L0 88 Z',
-    icon: Activity,
-  },
-  {
-    id: 'saved',
-    label: 'Hours Saved / Wk',
-    value: '64.5h',
-    delta: '+12.4h vs last mo',
+    id: 'invoices',
+    label: 'Invoices Paid',
+    value: '$48,200',
+    delta: '$9,450 unpaid',
+    panelTitle: 'Invoices Paid vs. Unpaid',
+    panelSubtitle: '84% collected · 3 awaiting payment',
     color: 'green',
     chartPath:
-      'M0 72 C36 68, 74 56, 112 48 C150 40, 186 24, 224 18 C258 14, 286 10, 310 8',
+      'M0 64 C35 58, 72 48, 110 42 C148 36, 188 26, 226 18 C258 13, 286 11, 310 9',
     chartAreaPath:
-      'M0 72 C36 68, 74 56, 112 48 C150 40, 186 24, 224 18 C258 14, 286 10, 310 8 L310 88 L0 88 Z',
-    icon: Clock,
+      'M0 64 C35 58, 72 48, 110 42 C148 36, 188 26, 226 18 C258 13, 286 11, 310 9 L310 88 L0 88 Z',
+    icon: Receipt,
+    rows: [
+      {
+        code: 'INV-1042',
+        client: 'Bayside Plumbing',
+        meta: 'Paid 14 Nov',
+        amount: '$4,200',
+        status: 'Paid',
+        tone: 'green',
+      },
+      {
+        code: 'INV-1045',
+        client: 'Northside Electrical',
+        meta: 'Due in 3 days',
+        amount: '$3,850',
+        status: 'Unpaid',
+        tone: 'amber',
+      },
+      {
+        code: 'INV-1039',
+        client: 'Coastline HVAC',
+        meta: 'Overdue 4 days',
+        amount: '$1,400',
+        status: 'Overdue',
+        tone: 'pink',
+      },
+    ],
   },
   {
-    id: 'errors',
-    label: 'Workflow Friction',
-    value: '0.4%',
-    delta: '-78% since launch',
+    id: 'jobs',
+    label: 'Jobs Completed',
+    value: '128',
+    delta: '14 active in field',
+    panelTitle: 'Jobs Completed & Active',
+    panelSubtitle: '90% completed on schedule (AEST)',
+    color: 'blue',
+    chartPath:
+      'M0 70 C36 64, 74 54, 112 46 C150 38, 186 24, 224 18 C258 14, 286 10, 310 8',
+    chartAreaPath:
+      'M0 70 C36 64, 74 54, 112 46 C150 38, 186 24, 224 18 C258 14, 286 10, 310 8 L310 88 L0 88 Z',
+    icon: Briefcase,
+    rows: [
+      {
+        code: 'JOB-884',
+        client: 'Parramatta Medical Fitout',
+        meta: 'Signed off today',
+        amount: '6.5 hrs',
+        status: 'Completed',
+        tone: 'green',
+      },
+      {
+        code: 'JOB-887',
+        client: 'Bondi Strata Maintenance',
+        meta: 'Crew on site',
+        amount: '3.0 hrs',
+        status: 'In field',
+        tone: 'blue',
+      },
+      {
+        code: 'JOB-889',
+        client: 'Alexandria Coldroom',
+        meta: '08:00 AEST slot',
+        amount: 'Booked',
+        status: 'Queued',
+        tone: 'sky',
+      },
+    ],
+  },
+  {
+    id: 'quotes',
+    label: 'Unfinished Quotes',
+    value: '9 open',
+    delta: '$34,600 pending',
+    panelTitle: 'Unfinished & Open Quotes',
+    panelSubtitle: 'Follow up via Sender to close',
+    color: 'amber',
+    chartPath:
+      'M0 44 C38 38, 74 50, 112 42 C150 34, 188 28, 226 36 C258 42, 286 30, 310 24',
+    chartAreaPath:
+      'M0 44 C38 38, 74 50, 112 42 C150 34, 188 28, 226 36 C258 42, 286 30, 310 24 L310 88 L0 88 Z',
+    icon: FileClock,
+    rows: [
+      {
+        code: 'QT-318',
+        client: 'Westfield Retail Tenancy',
+        meta: 'Opened 2x by client',
+        amount: '$16,400',
+        status: 'Awaiting sign',
+        tone: 'amber',
+      },
+      {
+        code: 'QT-321',
+        client: 'Harbour Strata Group',
+        meta: 'Sent 3 days ago',
+        amount: '$9,800',
+        status: 'Follow up',
+        tone: 'pink',
+      },
+      {
+        code: 'QT-324',
+        client: 'Metro Warehouse Upgrade',
+        meta: 'Draft · 65% scoped',
+        amount: '$8,400',
+        status: 'Draft',
+        tone: 'sky',
+      },
+    ],
+  },
+  {
+    id: 'pipeline',
+    label: 'Active Pipeline',
+    value: '$82,800',
+    delta: '36 open deals',
+    panelTitle: 'CRM Sales & Job Pipeline',
+    panelSubtitle: '34% quote-to-paid conversion',
     color: 'pink',
     chartPath:
-      'M0 16 C38 22, 72 34, 112 44 C150 54, 188 64, 226 70 C258 75, 286 77, 310 79',
+      'M0 68 C36 60, 74 52, 112 44 C150 34, 188 26, 226 20 C258 15, 286 12, 310 10',
     chartAreaPath:
-      'M0 16 C38 22, 72 34, 112 44 C150 54, 188 64, 226 70 C258 75, 286 77, 310 79 L310 88 L0 88 Z',
+      'M0 68 C36 60, 74 52, 112 44 C150 34, 188 26, 226 20 C258 15, 286 12, 310 10 L310 88 L0 88 Z',
     icon: BarChart3,
+    rows: [
+      {
+        code: 'STAGE 1',
+        client: 'New Web & Phone Enquiries',
+        meta: 'Avg 18m response',
+        amount: '18 leads',
+        status: 'Enquiry',
+        tone: 'sky',
+      },
+      {
+        code: 'STAGE 2',
+        client: 'Unfinished Quotes Sent',
+        meta: '$34.6k open value',
+        amount: '9 quotes',
+        status: 'Pending',
+        tone: 'amber',
+      },
+      {
+        code: 'STAGE 3',
+        client: 'Approved & In Progress',
+        meta: 'Avg $4.4k per job',
+        amount: '14 jobs',
+        status: 'Won',
+        tone: 'green',
+      },
+    ],
   },
 ];
 
-const FEATURE_ADOPTION_BARS: {
-  label: string;
-  pct: number;
+const PIPELINE_STAGES: {
+  stage: string;
+  count: string;
+  value: string;
   widthClass: string;
-  note: string;
   color: StudioColorKey;
 }[] = [
-  { label: 'Supabase Sync', pct: 99, widthClass: 'w-[99%]', note: 'Live', color: 'green' },
-  { label: 'Job Dispatch', pct: 94, widthClass: 'w-[94%]', note: 'Daily core', color: 'blue' },
-  { label: 'Sender Alerts', pct: 91, widthClass: 'w-[91%]', note: 'Delivered', color: 'sky' },
-  { label: 'Field Sign-Off', pct: 71, widthClass: 'w-[71%]', note: 'Simplify step 3', color: 'amber' },
+  { stage: 'New Enquiries', count: '18', value: '$54.0k', widthClass: 'w-[94%]', color: 'sky' },
+  { stage: 'Unfinished Quotes', count: '9', value: '$34.6k', widthClass: 'w-[66%]', color: 'amber' },
+  { stage: 'Jobs Completed', count: '128', value: '$62.4k', widthClass: 'w-[88%]', color: 'blue' },
+  { stage: 'Invoices Paid', count: '32', value: '$48.2k', widthClass: 'w-[82%]', color: 'green' },
+  { stage: 'Unpaid Balance', count: '3', value: '$9.4k', widthClass: 'w-[28%]', color: 'pink' },
 ];
 
 interface FeatureReleaseItem {
-  id: string;
+  id: 'portal' | 'inventory' | 'quote-ai' | 'bi';
   title: string;
   stage: 'Shipped' | 'In build' | 'Scoped next';
   quarter: string;
-  scope: string;
-  impact: string;
+  metric: string;
   color: StudioColorKey;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
 const FEATURE_RELEASES: FeatureReleaseItem[] = [
   {
     id: 'portal',
-    title: 'Client Self-Serve Portal',
+    title: 'Client Portal',
     stage: 'Shipped',
     quarter: 'Supabase Auth',
-    scope: 'Branded login, quote approvals, invoice history and Sender notifications.',
-    impact: '38% faster quote sign-off · Built in Visual Studio Code, shipped via GitHub',
+    metric: '38% faster sign-off',
     color: 'green',
+    icon: KeyRound,
   },
   {
     id: 'inventory',
-    title: 'Multi-Warehouse Stock Sync',
+    title: 'Multi-Site Stock',
     stage: 'In build',
     quarter: 'GitLab CI',
-    scope: 'Real-time Supabase stock allocation across Sydney & Brisbane depots.',
-    impact: 'Eliminates manual Friday stocktake spreadsheets · Automated staging previews',
+    metric: '2 depots · live sync',
     color: 'blue',
+    icon: Boxes,
   },
   {
     id: 'quote-ai',
-    title: 'AI-Assisted Scope & Quote Prep',
+    title: 'Smart Quoting',
     stage: 'Scoped next',
     quarter: 'Claude AI',
-    scope: 'Drafts accurate line-item estimates from historical job specs via Claude AI.',
-    impact: 'Est. 2-week fixed-scope module · Managed prompts & human review',
+    metric: '2-week build',
     color: 'amber',
+    icon: Calculator,
   },
   {
     id: 'bi',
-    title: 'Branch Margin Forecasting',
+    title: 'Margin Radar',
     stage: 'Scoped next',
-    quarter: 'GitHub · Supabase',
-    scope: 'Live labour vs materials margin tracking by branch and project manager.',
-    impact: 'Modular add-on · Built cleanly on existing Supabase schema',
+    quarter: 'Live BI',
+    metric: 'Branch profitability',
     color: 'pink',
+    icon: TrendingUp,
   },
 ];
 
@@ -596,9 +829,13 @@ export function SupportScaleSection() {
 
   const [selectedHostingCard, setSelectedHostingCard] =
     useState<HostingCard['id']>('au-cloud');
-  const [selectedTicketId, setSelectedTicketId] = useState<string>('xero-retry');
+  const [selectedTicketId, setSelectedTicketId] = useState<string>('quote-chat');
+  const [replyDraft, setReplyDraft] = useState<string>('');
+  const [customReplies, setCustomReplies] = useState<
+    Record<string, ConversationMessage[]>
+  >({});
   const [selectedKpiId, setSelectedKpiId] =
-    useState<AnalyticsKpi['id']>('adoption');
+    useState<AnalyticsKpi['id']>('invoices');
   const [selectedFeatureId, setSelectedFeatureId] = useState<string>('portal');
   const [selectedAutomationId, setSelectedAutomationId] =
     useState<string>('invoice-sync');
@@ -612,6 +849,28 @@ export function SupportScaleSection() {
   const activeTicket =
     SUPPORT_TICKETS.find((t) => t.id === selectedTicketId) ?? SUPPORT_TICKETS[0];
   const activeTicketAccent = LIGHT_ACCENTS[activeTicket.color];
+  const activeConversationMessages = [
+    ...activeTicket.messages,
+    ...(customReplies[activeTicket.id] ?? []),
+  ];
+
+  const handleSendReply = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = replyDraft.trim();
+    if (!trimmed) return;
+    const newMsg: ConversationMessage = {
+      id: `reply-${Date.now()}`,
+      sender: 'customer',
+      author: 'You',
+      time: 'Just now',
+      text: trimmed,
+    };
+    setCustomReplies((prev) => ({
+      ...prev,
+      [activeTicket.id]: [...(prev[activeTicket.id] ?? []), newMsg],
+    }));
+    setReplyDraft('');
+  };
 
   const activeKpi =
     ANALYTICS_KPIS.find((k) => k.id === selectedKpiId) ?? ANALYTICS_KPIS[0];
@@ -1097,24 +1356,21 @@ export function SupportScaleSection() {
                 </div>
               )}
 
-              {/* 02 Support & Maintenance */}
+              {/* 02 Support & Maintenance — 30% Customer Issues / 70% Live Conversations */}
               {activeStep === '02' && (
                 <div>
-                  <div className="grid grid-cols-1 sm:grid-cols-12">
-                    {/* Left Sub-Pane: Local Ticket & Patch Queue */}
-                    <div className="sm:col-span-5 bg-[#F8FAFC] border-b sm:border-b-0 sm:border-r border-slate-200/80 p-4 flex flex-col justify-between">
+                  <div className="grid grid-cols-1 sm:grid-cols-[30%_70%]">
+                    {/* Left Panel (30%): Expandable Customer Issues */}
+                    <div className="bg-[#F8FAFC] border-b sm:border-b-0 sm:border-r border-slate-200/80 p-3.5 flex flex-col justify-between">
                       <div>
-                        <div className="flex items-center justify-between text-[11px] font-semibold text-slate-700 pb-3 border-b border-slate-200/80">
-                          <span className="inline-flex items-center gap-1.5">
-                            <LifeBuoy className="h-3.5 w-3.5 text-[#BE185D]" />
-                            Sydney Care Log
-                          </span>
-                          <span className="font-mono font-normal text-slate-500 tabular-nums">
-                            4 recent
+                        <div className="flex items-center justify-between text-[11px] font-semibold text-slate-700 pb-2.5 border-b border-slate-200/80">
+                          <span className="truncate">Customer Issues</span>
+                          <span className="font-mono font-normal text-slate-500 tabular-nums shrink-0">
+                            4 threads
                           </span>
                         </div>
 
-                        <ul className="mt-3 space-y-1.5">
+                        <ul className="mt-2.5 space-y-1.5">
                           {SUPPORT_TICKETS.map((ticket) => {
                             const isSelected = selectedTicketId === ticket.id;
                             const accent = LIGHT_ACCENTS[ticket.color];
@@ -1123,22 +1379,33 @@ export function SupportScaleSection() {
                                 <button
                                   type="button"
                                   onClick={() => setSelectedTicketId(ticket.id)}
-                                  className={`w-full text-left rounded-lg px-2.5 py-2 transition-colors duration-150 cursor-pointer border ${
+                                  aria-expanded={isSelected}
+                                  className={`w-full text-left rounded-lg px-2.5 py-2 transition-all duration-150 cursor-pointer border ${
                                     isSelected
                                       ? accent.cardActive
                                       : 'border-transparent hover:bg-white'
                                   }`}
                                 >
-                                  <div className="text-xs font-medium text-slate-900 truncate">
-                                    {ticket.title}
+                                  <div className="flex items-center justify-between gap-1.5">
+                                    <span className="text-[11px] font-semibold text-slate-900 truncate">
+                                      {ticket.title}
+                                    </span>
                                   </div>
-                                  <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-mono text-slate-500 tabular-nums">
+                                  <div className="mt-0.5 flex items-center gap-1 text-[9.5px] font-mono text-slate-500 tabular-nums truncate">
                                     <span className={`${accent.text} font-medium`}>
-                                      {ticket.category}
+                                      {ticket.status}
                                     </span>
                                     <span aria-hidden="true">·</span>
-                                    <span>{ticket.responseTime}</span>
+                                    <span className="truncate">{ticket.responseTime}</span>
                                   </div>
+                                  {isSelected && (
+                                    <div className="mt-2 pt-2 border-t border-slate-100 text-[10.5px] leading-snug text-slate-600">
+                                      <div className="font-medium text-slate-800 mb-0.5">
+                                        {ticket.customer}
+                                      </div>
+                                      {ticket.issueSummary}
+                                    </div>
+                                  )}
                                 </button>
                               </li>
                             );
@@ -1146,86 +1413,94 @@ export function SupportScaleSection() {
                         </ul>
                       </div>
 
-                      <div className="mt-4 pt-3 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-slate-500">
-                        <span>Support desk</span>
+                      <div className="mt-3 pt-2.5 border-t border-slate-200/80 flex items-center justify-between text-[10px] font-mono text-slate-500">
+                        <span>Local desk</span>
                         <span className="font-medium text-slate-800">Sydney · AEST</span>
                       </div>
                     </div>
 
-                    {/* Right Sub-Pane: Active Ticket / Maintenance Inspector */}
-                    <div className="sm:col-span-7 p-4 sm:p-5 flex flex-col justify-between gap-4">
+                    {/* Right Panel (70%): Live Conversation Thread */}
+                    <div className="p-4 flex flex-col justify-between gap-3 bg-white">
                       <div>
-                        <div className="flex items-center justify-between gap-2">
-                          <span
-                            className={`font-mono text-[11px] font-medium tabular-nums ${activeTicketAccent.text}`}
-                          >
-                            {activeTicket.category} · {activeTicket.status}
-                          </span>
-                          <span className="font-mono text-[11px] text-slate-500 tabular-nums">
-                            {activeTicket.responseTime}
-                          </span>
-                        </div>
-
-                        <h3 className="mt-2 text-sm sm:text-[15px] font-semibold text-slate-900">
-                          {activeTicket.title}
-                        </h3>
-
-                        <p className="mt-2 text-xs leading-relaxed text-slate-600">
-                          {activeTicket.summary}
-                        </p>
-
-                        <div className="mt-4 rounded-xl bg-[#F8FAFC] border border-slate-200/90 p-3.5 space-y-2">
-                          <div className="flex items-center justify-between text-[11px]">
-                            <span className="text-slate-500">Assigned engineer</span>
-                            <span className="font-medium text-slate-800">
-                              {activeTicket.engineer}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between text-[11px]">
-                            <span className="text-slate-500">Toolchain</span>
-                            <span className="font-mono text-[10.5px] text-slate-700">
-                              {activeTicket.toolchain}
-                            </span>
-                          </div>
-                          <div className="pt-2 border-t border-slate-200/80 flex items-start gap-2 text-[11px] text-slate-700">
-                            <Check
-                              className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${activeTicketAccent.check}`}
+                        {/* Thread Top Bar */}
+                        <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-200/80">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <MessageSquare
+                              className={`h-3.5 w-3.5 shrink-0 ${activeTicketAccent.text}`}
                             />
-                            <span>{activeTicket.resolution}</span>
+                            <span className="text-xs font-semibold text-slate-900 truncate">
+                              {activeTicket.title}
+                            </span>
                           </div>
+                          <span className="font-mono text-[10px] text-slate-500 shrink-0 tabular-nums">
+                            {activeTicket.toolchain}
+                          </span>
+                        </div>
+
+                        {/* Live Messages Stream */}
+                        <div className="mt-3 space-y-2.5 max-h-[250px] overflow-y-auto pr-1">
+                          {activeConversationMessages.map((msg) => {
+                            const isCustomer = msg.sender === 'customer';
+                            return (
+                              <div
+                                key={msg.id}
+                                className={`flex flex-col ${
+                                  isCustomer ? 'items-start' : 'items-end'
+                                }`}
+                              >
+                                <div className="flex items-center gap-1.5 text-[9.5px] font-mono text-slate-500 mb-1 tabular-nums">
+                                  <span className="font-medium text-slate-700">
+                                    {msg.author}
+                                  </span>
+                                  <span aria-hidden="true">·</span>
+                                  <span>{msg.time}</span>
+                                </div>
+                                <div
+                                  className={`max-w-[88%] rounded-xl px-3 py-2 text-xs leading-relaxed ${
+                                    isCustomer
+                                      ? 'bg-[#F8FAFC] border border-slate-200/90 text-slate-800'
+                                      : 'bg-[#0F172A] text-slate-100'
+                                  }`}
+                                >
+                                  {msg.text}
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
 
-                      {/* SLA Targets Row */}
-                      <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-200/80">
-                        <div>
-                          <div className="text-[10px] text-slate-500">Urgent SLA</div>
-                          <div className="font-mono text-xs font-semibold text-slate-900 tabular-nums mt-0.5">
-                            &lt; 30 mins
-                          </div>
-                        </div>
-                        <div>
-                          <div className="text-[10px] text-slate-500">Security patches</div>
-                          <div className="font-mono text-xs font-semibold text-[#15803D] tabular-nums mt-0.5">
-                            GitHub · GitLab
-                          </div>
-                        </div>
-                        <div>
-                          <div className="text-[10px] text-slate-500">Team location</div>
-                          <div className="font-mono text-xs font-semibold text-slate-900 mt-0.5">
-                            100% AU
-                          </div>
-                        </div>
-                      </div>
+                      {/* Interactive Reply Composer */}
+                      <form
+                        onSubmit={handleSendReply}
+                        className="pt-2.5 border-t border-slate-200/80 flex items-center gap-2"
+                      >
+                        <input
+                          type="text"
+                          value={replyDraft}
+                          onChange={(e) => setReplyDraft(e.target.value)}
+                          placeholder="Reply directly to the Sydney dev team..."
+                          aria-label="Reply to live support thread"
+                          className="flex-1 min-w-0 rounded-lg border border-slate-200 bg-[#F8FAFC] px-3 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-violet-500 focus:outline-none"
+                        />
+                        <button
+                          type="submit"
+                          aria-label="Send message"
+                          className="inline-flex items-center gap-1 rounded-lg bg-[#0F172A] px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+                        >
+                          <span>Send</span>
+                          <Send className="h-3 w-3" aria-hidden="true" />
+                        </button>
+                      </form>
                     </div>
                   </div>
 
                   <div className="px-5 py-3 bg-[#F8FAFC] border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-600">
                     <span>
-                      Maintained in Visual Studio Code · CI/CD via GitHub &amp; GitLab
+                      Direct Sydney engineers · Visual Studio Code · GitHub &amp; GitLab
                     </span>
                     <span className="font-mono text-[#15803D] tabular-nums">
-                      Zero-downtime releases
+                      &lt; 30m local response
                     </span>
                   </div>
                 </div>
@@ -1234,9 +1509,29 @@ export function SupportScaleSection() {
               {/* 03 Analytics & Insights */}
               {activeStep === '03' && (
                 <div>
-                  <div className="p-4 sm:p-5 space-y-4">
-                    {/* Top 3 KPI Selector Cards */}
-                    <div className="grid grid-cols-3 gap-2.5">
+                  <div className="p-4 sm:p-5 space-y-3.5">
+                    {/* Branded Workspace Header */}
+                    <div className="rounded-xl bg-[#F8FAFC] border border-slate-200/90 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="rounded-lg border border-dashed border-slate-300 bg-white px-2.5 py-1 font-mono text-[10px] font-medium text-slate-600 shrink-0">
+                          [Your Logo Here]
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold text-slate-900 truncate">
+                            Your Business Portal
+                          </div>
+                          <div className="font-mono text-[9.5px] text-slate-500 truncate">
+                            portal.yourbusiness.com.au
+                          </div>
+                        </div>
+                      </div>
+                      <span className="font-mono text-[10px] text-slate-500 tabular-nums shrink-0">
+                        Live ops · This month
+                      </span>
+                    </div>
+
+                    {/* Top 4 Real-World Business KPI Selectors */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       {ANALYTICS_KPIS.map((kpi) => {
                         const Icon = kpi.icon;
                         const isSelected = selectedKpiId === kpi.id;
@@ -1246,7 +1541,7 @@ export function SupportScaleSection() {
                             key={kpi.id}
                             type="button"
                             onClick={() => setSelectedKpiId(kpi.id)}
-                            className={`text-left rounded-xl p-3 border transition-all duration-150 cursor-pointer ${
+                            className={`text-left rounded-xl p-2.5 border transition-all duration-150 cursor-pointer ${
                               isSelected
                                 ? accent.cardActive
                                 : 'bg-[#F8FAFC] border-slate-200 hover:border-slate-300 hover:bg-white'
@@ -1258,7 +1553,7 @@ export function SupportScaleSection() {
                               </span>
                               <Icon className={`h-3 w-3 shrink-0 ${accent.text}`} />
                             </div>
-                            <div className="mt-1.5 text-base sm:text-lg font-bold tracking-tight text-slate-900 tabular-nums">
+                            <div className="mt-1 text-sm sm:text-base font-bold tracking-tight text-slate-900 tabular-nums">
                               {kpi.value}
                             </div>
                             <div
@@ -1271,26 +1566,26 @@ export function SupportScaleSection() {
                       })}
                     </div>
 
-                    {/* Chart + Feature Adoption Breakdown */}
+                    {/* Main Split: Active Metric Trend + Real-World Records | Live CRM Pipeline */}
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5">
-                      <div className="md:col-span-7 rounded-xl bg-[#F8FAFC] border border-slate-200/90 p-4 flex flex-col justify-between">
-                        <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="md:col-span-7 rounded-xl bg-[#F8FAFC] border border-slate-200/90 p-3.5 flex flex-col justify-between gap-3">
+                        <div className="flex items-center justify-between gap-2">
                           <div>
                             <div className="text-xs font-semibold text-slate-900">
-                              Usage &amp; Impact Trend
+                              {activeKpi.panelTitle}
                             </div>
                             <div className="text-[10px] text-slate-500 mt-0.5">
-                              {activeKpi.label} · Last 6 months
+                              {activeKpi.panelSubtitle}
                             </div>
                           </div>
                           <span
-                            className={`font-mono text-[10px] tabular-nums ${activeKpiAccent.text}`}
+                            className={`font-mono text-[10px] font-semibold tabular-nums ${activeKpiAccent.text}`}
                           >
                             {activeKpi.value}
                           </span>
                         </div>
 
-                        <div className="relative h-28 w-full">
+                        <div className="relative h-20 w-full">
                           <svg
                             viewBox="0 0 310 92"
                             className="h-full w-full overflow-visible"
@@ -1316,9 +1611,9 @@ export function SupportScaleSection() {
                                 />
                               </linearGradient>
                             </defs>
-                            <line x1="0" y1="20" x2="310" y2="20" stroke="#E2E8F0" strokeWidth="1" />
-                            <line x1="0" y1="46" x2="310" y2="46" stroke="#E2E8F0" strokeWidth="1" />
-                            <line x1="0" y1="72" x2="310" y2="72" stroke="#E2E8F0" strokeWidth="1" />
+                            <line x1="0" y1="24" x2="310" y2="24" stroke="#E2E8F0" strokeWidth="1" />
+                            <line x1="0" y1="54" x2="310" y2="54" stroke="#E2E8F0" strokeWidth="1" />
+                            <line x1="0" y1="82" x2="310" y2="82" stroke="#E2E8F0" strokeWidth="1" />
                             <path
                               d={activeKpi.chartAreaPath}
                               fill={`url(#${analyticsGradientId})`}
@@ -1332,51 +1627,75 @@ export function SupportScaleSection() {
                           </svg>
                         </div>
 
-                        <div className="mt-2 flex items-center justify-between font-mono text-[10px] text-slate-400 tabular-nums">
-                          <span>Month 1</span>
-                          <span>Month 2</span>
-                          <span>Month 3</span>
-                          <span>Month 4</span>
-                          <span>Month 5</span>
-                          <span>Month 6</span>
-                        </div>
-                      </div>
-
-                      <div className="md:col-span-5 rounded-xl bg-[#F8FAFC] border border-slate-200/90 p-4 flex flex-col justify-between">
-                        <div className="flex items-center justify-between text-[11px] font-semibold text-slate-800 pb-2 border-b border-slate-200/80">
-                          <span>Feature Adoption</span>
-                          <span className="font-mono text-[10px] font-normal text-slate-500">
-                            By module
-                          </span>
-                        </div>
-
-                        <div className="mt-3 space-y-3">
-                          {FEATURE_ADOPTION_BARS.map((bar) => {
-                            const accent = LIGHT_ACCENTS[bar.color];
+                        {/* Real-World Case Rows */}
+                        <ul className="space-y-1.5 pt-2 border-t border-slate-200/80">
+                          {activeKpi.rows.map((row) => {
+                            const rowAccent = LIGHT_ACCENTS[row.tone];
                             return (
-                              <div key={bar.label}>
-                                <div className="flex items-center justify-between text-[10.5px]">
-                                  <span className="font-medium text-slate-800">
-                                    {bar.label}
-                                  </span>
-                                  <span
-                                    className={`font-mono tabular-nums ${accent.text}`}
-                                  >
-                                    {bar.pct}% · {bar.note}
-                                  </span>
+                              <li
+                                key={row.code}
+                                className="rounded-lg bg-white border border-slate-200/80 px-2.5 py-1.5 flex items-center justify-between gap-2 text-[10.5px]"
+                              >
+                                <div className="min-w-0">
+                                  <div className="font-medium text-slate-900 truncate">
+                                    {row.client}
+                                  </div>
+                                  <div className="font-mono text-[9.5px] text-slate-500 tabular-nums">
+                                    {row.code} · {row.meta}
+                                  </div>
                                 </div>
-                                <div className="mt-1 h-1.5 w-full rounded-full bg-slate-200/80 overflow-hidden">
-                                  <div
-                                    className={`h-full rounded-full ${accent.barBg} ${bar.widthClass}`}
-                                  />
+                                <div className="text-right shrink-0 font-mono tabular-nums">
+                                  <div className="font-semibold text-slate-900">
+                                    {row.amount}
+                                  </div>
+                                  <div className={`text-[9.5px] ${rowAccent.text}`}>
+                                    {row.status}
+                                  </div>
                                 </div>
-                              </div>
+                              </li>
                             );
                           })}
+                        </ul>
+                      </div>
+
+                      {/* Right Column: Live Sales & Job Pipeline Stages */}
+                      <div className="md:col-span-5 rounded-xl bg-[#F8FAFC] border border-slate-200/90 p-3.5 flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center justify-between text-[11px] font-semibold text-slate-800 pb-2 border-b border-slate-200/80">
+                            <span>Sales &amp; Job Pipeline</span>
+                            <span className="font-mono text-[10px] font-normal text-slate-500">
+                              Live stages
+                            </span>
+                          </div>
+
+                          <div className="mt-3 space-y-2.5">
+                            {PIPELINE_STAGES.map((item) => {
+                              const accent = LIGHT_ACCENTS[item.color];
+                              return (
+                                <div key={item.stage}>
+                                  <div className="flex items-center justify-between text-[10.5px]">
+                                    <span className="font-medium text-slate-800 truncate">
+                                      {item.stage}
+                                    </span>
+                                    <span
+                                      className={`font-mono tabular-nums shrink-0 ${accent.text}`}
+                                    >
+                                      {item.count} · {item.value}
+                                    </span>
+                                  </div>
+                                  <div className="mt-1 h-1.5 w-full rounded-full bg-slate-200/80 overflow-hidden">
+                                    <div
+                                      className={`h-full rounded-full ${accent.barBg} ${item.widthClass}`}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
 
                         <div className="mt-3 pt-2.5 border-t border-slate-200/80 text-[10.5px] text-slate-600">
-                          Next insight: Streamline step 3 on Field Sign-Off to lift mobile completion.
+                          Next action: 9 unfinished quotes ($34.6k) queued for Sender follow-up.
                         </div>
                       </div>
                     </div>
@@ -1384,10 +1703,10 @@ export function SupportScaleSection() {
 
                   <div className="px-5 py-3 bg-[#F8FAFC] border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-600">
                     <span>
-                      Telemetry: Supabase Analytics · Cloudflare Edge · Sender Delivery Stats
+                      Your branded portal: Invoices · Jobs · Quotes · Live Supabase Sync
                     </span>
                     <span className="font-mono text-[#0369A1] tabular-nums">
-                      Data-backed roadmap
+                      Real-time operations
                     </span>
                   </div>
                 </div>
@@ -1400,15 +1719,17 @@ export function SupportScaleSection() {
                     <div className="flex items-center justify-between gap-2 text-xs">
                       <span className="inline-flex items-center gap-1.5 font-semibold text-slate-800">
                         <PlusSquare className="h-3.5 w-3.5 text-[#1D4ED8]" />
-                        Post-Launch Feature Pipeline
+                        Modular Feature Expansion
                       </span>
                       <span className="font-mono text-[11px] text-slate-500 tabular-nums">
-                        Modular extensions · Fixed scope
+                        Fixed-scope add-ons
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {/* Compact 4-Tile Icon Selector */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                       {FEATURE_RELEASES.map((item) => {
+                        const Icon = item.icon;
                         const isSelected = selectedFeatureId === item.id;
                         const accent = LIGHT_ACCENTS[item.color];
                         return (
@@ -1416,57 +1737,299 @@ export function SupportScaleSection() {
                             key={item.id}
                             type="button"
                             onClick={() => setSelectedFeatureId(item.id)}
-                            className={`text-left rounded-xl p-3.5 border transition-all duration-150 cursor-pointer flex flex-col justify-between ${
+                            className={`text-left rounded-xl p-3 border transition-all duration-150 cursor-pointer flex flex-col justify-between gap-2 ${
                               isSelected
                                 ? accent.cardActive
                                 : 'bg-[#F8FAFC] border-slate-200 hover:border-slate-300 hover:bg-white'
                             }`}
                           >
-                            <div>
+                            <div className="flex items-center justify-between gap-1.5">
                               <span
-                                className={`block h-[2.5px] w-7 rounded-full mb-2 ${accent.barBg}`}
-                                aria-hidden="true"
-                              />
-                              <div className="flex items-center justify-between gap-2 font-mono text-[10px] tabular-nums">
-                                <span className={accent.text}>{item.stage}</span>
-                                <span className="text-slate-400">{item.quarter}</span>
-                              </div>
+                                className={`h-7 w-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                                  isSelected ? accent.iconActive : accent.iconIdle
+                                }`}
+                              >
+                                <Icon className="h-3.5 w-3.5" />
+                              </span>
+                              <span
+                                className={`font-mono text-[9.5px] tabular-nums ${accent.text}`}
+                              >
+                                {item.stage}
+                              </span>
                             </div>
-
-                            <div className="mt-1.5 text-xs font-semibold text-slate-900">
+                            <div className="text-xs font-semibold text-slate-900 truncate">
                               {item.title}
-                            </div>
-
-                            <div className="mt-1 text-[11px] text-slate-600 line-clamp-2">
-                              {item.scope}
                             </div>
                           </button>
                         );
                       })}
                     </div>
 
-                    {/* Selected Feature Scope & Outcome Box */}
-                    <div className="rounded-xl bg-[#F8FAFC] border border-slate-200/90 p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 text-[11px] font-mono tabular-nums">
-                          <Layers className={`h-3.5 w-3.5 ${activeFeatureAccent.text}`} />
-                          <span className={activeFeatureAccent.text}>
-                            {activeFeature.title}
-                          </span>
-                        </div>
-                        <p className="mt-1 text-xs text-slate-700">
-                          {activeFeature.impact}
-                        </p>
+                    {/* Visual Icon Schematic Stage (Zero wall of text, zero stock images) */}
+                    <div className="rounded-xl infra-dot-light border border-slate-200/90 p-4 sm:p-5 min-h-[214px] flex flex-col justify-between gap-4">
+                      {/* Header Strip inside Schematic */}
+                      <div className="flex items-center justify-between gap-2 text-[11px] pb-2.5 border-b border-slate-200/80">
+                        <span className={`font-semibold ${activeFeatureAccent.text}`}>
+                          {activeFeature.title}
+                        </span>
+                        <span className="font-mono text-[10px] text-slate-500 tabular-nums">
+                          {activeFeature.quarter} · {activeFeature.metric}
+                        </span>
                       </div>
-                      <span className="font-mono text-[10.5px] text-slate-500 shrink-0 tabular-nums">
-                        {activeFeature.stage} · {activeFeature.quarter}
-                      </span>
+
+                      {/* Module 1: Client Portal Visual Flow */}
+                      {activeFeature.id === 'portal' && (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 items-center">
+                            <div className="rounded-xl bg-white border border-slate-200/90 p-3 flex items-center gap-2.5 shadow-xs">
+                              <span className="h-8 w-8 rounded-lg bg-[#22C55E]/12 text-[#15803D] flex items-center justify-center shrink-0">
+                                <KeyRound className="h-4 w-4" />
+                              </span>
+                              <div className="min-w-0">
+                                <div className="text-[11px] font-semibold text-slate-900 truncate">
+                                  Branded Login
+                                </div>
+                                <div className="font-mono text-[9.5px] text-slate-500 truncate">
+                                  Supabase Auth
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="rounded-xl bg-white border border-[#22C55E]/60 p-3 flex items-center gap-2.5 shadow-xs">
+                              <span className="h-8 w-8 rounded-lg bg-[#22C55E] text-white flex items-center justify-center shrink-0">
+                                <FileCheck2 className="h-4 w-4" />
+                              </span>
+                              <div className="min-w-0">
+                                <div className="text-[11px] font-semibold text-slate-900 truncate">
+                                  Quote Sign-Off
+                                </div>
+                                <div className="font-mono text-[9.5px] text-[#15803D] truncate">
+                                  1-click approval
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="rounded-xl bg-white border border-slate-200/90 p-3 flex items-center gap-2.5 shadow-xs">
+                              <span className="h-8 w-8 rounded-lg bg-[#38BDF8]/15 text-[#0369A1] flex items-center justify-center shrink-0">
+                                <Receipt className="h-4 w-4" />
+                              </span>
+                              <div className="min-w-0">
+                                <div className="text-[11px] font-semibold text-slate-900 truncate">
+                                  Live Invoices
+                                </div>
+                                <div className="font-mono text-[9.5px] text-slate-500 truncate">
+                                  Paid &amp; due history
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="rounded-xl bg-white border border-slate-200/90 px-3.5 py-2.5 flex items-center justify-between gap-3 text-[11px]">
+                            <div className="inline-flex items-center gap-2 text-slate-700 font-medium">
+                              <BellRing className="h-3.5 w-3.5 text-[#15803D]" />
+                              <span>Sender alerts active</span>
+                            </div>
+                            <span className="inline-flex items-center gap-1 font-mono text-[10.5px] font-semibold text-[#15803D] tabular-nums">
+                              <Check className="h-3.5 w-3.5" />
+                              38% faster approvals
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Module 2: Multi-Site Stock Visual Topology */}
+                      {activeFeature.id === 'inventory' && (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-3 gap-2.5">
+                            <div className="rounded-xl bg-white border border-slate-200/90 p-3 shadow-xs">
+                              <div className="flex items-center justify-between gap-1">
+                                <Warehouse className="h-4 w-4 text-[#1D4ED8]" />
+                                <span className="font-mono text-[10px] text-[#1D4ED8] tabular-nums">
+                                  84%
+                                </span>
+                              </div>
+                              <div className="mt-2 text-[11px] font-semibold text-slate-900 truncate">
+                                Sydney
+                              </div>
+                              <div className="mt-1.5 h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                                <div className="h-full w-[84%] rounded-full bg-[#3B82F6]" />
+                              </div>
+                            </div>
+
+                            <div className="rounded-xl bg-white border border-slate-200/90 p-3 shadow-xs">
+                              <div className="flex items-center justify-between gap-1">
+                                <Warehouse className="h-4 w-4 text-[#0369A1]" />
+                                <span className="font-mono text-[10px] text-[#0369A1] tabular-nums">
+                                  62%
+                                </span>
+                              </div>
+                              <div className="mt-2 text-[11px] font-semibold text-slate-900 truncate">
+                                Brisbane
+                              </div>
+                              <div className="mt-1.5 h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                                <div className="h-full w-[62%] rounded-full bg-[#38BDF8]" />
+                              </div>
+                            </div>
+
+                            <div className="rounded-xl bg-white border border-slate-200/90 p-3 shadow-xs">
+                              <div className="flex items-center justify-between gap-1">
+                                <Truck className="h-4 w-4 text-[#15803D]" />
+                                <span className="font-mono text-[10px] text-[#15803D] tabular-nums">
+                                  91%
+                                </span>
+                              </div>
+                              <div className="mt-2 text-[11px] font-semibold text-slate-900 truncate">
+                                Field Vans
+                              </div>
+                              <div className="mt-1.5 h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                                <div className="h-full w-[91%] rounded-full bg-[#22C55E]" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="rounded-xl bg-white border border-[#3B82F6]/50 px-3.5 py-2.5 flex items-center justify-between gap-2 text-[11px]">
+                            <div className="inline-flex items-center gap-2 font-medium text-slate-800">
+                              <Database className="h-3.5 w-3.5 text-[#1D4ED8]" />
+                              <span>Live Supabase Sync</span>
+                            </div>
+                            <span className="font-mono text-[10px] text-[#1D4ED8]">
+                              GitLab CI · Zero spreadsheets
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Module 3: Smart Quoting Visual Pipeline */}
+                      {activeFeature.id === 'quote-ai' && (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex-1 rounded-xl bg-white border border-slate-200/90 p-2.5 flex flex-col items-center text-center shadow-xs">
+                              <span className="h-8 w-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center">
+                                <FileText className="h-4 w-4" />
+                              </span>
+                              <span className="mt-1.5 text-[10.5px] font-semibold text-slate-900">
+                                Past Specs
+                              </span>
+                            </div>
+
+                            <ArrowRight
+                              className="h-3.5 w-3.5 text-slate-400 shrink-0"
+                              aria-hidden="true"
+                            />
+
+                            <div className="flex-1 rounded-xl bg-white border border-[#F59E0B]/70 p-2.5 flex flex-col items-center text-center shadow-xs">
+                              <span className="h-8 w-8 rounded-lg bg-[#F59E0B] text-white flex items-center justify-center">
+                                <Sparkles className="h-4 w-4" />
+                              </span>
+                              <span className="mt-1.5 text-[10.5px] font-semibold text-slate-900">
+                                Claude AI Draft
+                              </span>
+                            </div>
+
+                            <ArrowRight
+                              className="h-3.5 w-3.5 text-slate-400 shrink-0"
+                              aria-hidden="true"
+                            />
+
+                            <div className="flex-1 rounded-xl bg-white border border-slate-200/90 p-2.5 flex flex-col items-center text-center shadow-xs">
+                              <span className="h-8 w-8 rounded-lg bg-[#22C55E]/15 text-[#15803D] flex items-center justify-center">
+                                <Check className="h-4 w-4" />
+                              </span>
+                              <span className="mt-1.5 text-[10.5px] font-semibold text-slate-900">
+                                Human Sign-Off
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="rounded-xl bg-white border border-slate-200/90 px-3.5 py-2.5 flex items-center justify-between gap-3 font-mono text-[10.5px] tabular-nums">
+                            <span className="text-slate-600">Materials $4,200</span>
+                            <span className="text-slate-600">Labour $2,850</span>
+                            <span className="font-semibold text-[#B45309]">Total $7,050</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Module 4: Margin Radar Visual Chart */}
+                      {activeFeature.id === 'bi' && (
+                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-stretch">
+                          <div className="sm:col-span-7 rounded-xl bg-white border border-slate-200/90 p-3 flex flex-col justify-between shadow-xs">
+                            <div className="flex items-center justify-between text-[10.5px]">
+                              <span className="font-semibold text-slate-800">
+                                Branch Margin
+                              </span>
+                              <span className="font-mono text-[#BE185D] tabular-nums">
+                                Target 40%+
+                              </span>
+                            </div>
+
+                            <div className="mt-3 grid grid-cols-3 gap-3 items-end h-20 pt-2">
+                              <div className="flex flex-col items-center gap-1 h-full justify-end">
+                                <span className="font-mono text-[9.5px] text-slate-700 tabular-nums">
+                                  42%
+                                </span>
+                                <div className="w-full max-w-[34px] h-[68%] rounded-t-md bg-[#E14D79]" />
+                                <span className="font-mono text-[9.5px] text-slate-500">
+                                  SYD
+                                </span>
+                              </div>
+                              <div className="flex flex-col items-center gap-1 h-full justify-end">
+                                <span className="font-mono text-[9.5px] text-slate-700 tabular-nums">
+                                  38%
+                                </span>
+                                <div className="w-full max-w-[34px] h-[58%] rounded-t-md bg-[#F59E0B]" />
+                                <span className="font-mono text-[9.5px] text-slate-500">
+                                  BNE
+                                </span>
+                              </div>
+                              <div className="flex flex-col items-center gap-1 h-full justify-end">
+                                <span className="font-mono text-[9.5px] text-slate-700 tabular-nums">
+                                  45%
+                                </span>
+                                <div className="w-full max-w-[34px] h-[78%] rounded-t-md bg-[#22C55E]" />
+                                <span className="font-mono text-[9.5px] text-slate-500">
+                                  MEL
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-5 flex flex-col justify-between gap-2.5">
+                            <div className="rounded-xl bg-white border border-slate-200/90 p-2.5 flex items-center gap-2.5 shadow-xs">
+                              <span className="h-7 w-7 rounded-lg bg-[#3B82F6]/12 text-[#1D4ED8] flex items-center justify-center shrink-0">
+                                <Clock className="h-3.5 w-3.5" />
+                              </span>
+                              <div>
+                                <div className="text-[11px] font-semibold text-slate-900">
+                                  Labour Split
+                                </div>
+                                <div className="font-mono text-[10px] text-slate-500 tabular-nums">
+                                  56% of job cost
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="rounded-xl bg-white border border-slate-200/90 p-2.5 flex items-center gap-2.5 shadow-xs">
+                              <span className="h-7 w-7 rounded-lg bg-[#E14D79]/12 text-[#BE185D] flex items-center justify-center shrink-0">
+                                <Package className="h-3.5 w-3.5" />
+                              </span>
+                              <div>
+                                <div className="text-[11px] font-semibold text-slate-900">
+                                  Materials
+                                </div>
+                                <div className="font-mono text-[10px] text-slate-500 tabular-nums">
+                                  44% of job cost
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   <div className="px-5 py-3 bg-[#F8FAFC] border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-600">
                     <span>
-                      Engineered in Visual Studio Code · Versioned in GitHub &amp; GitLab
+                      Built in Visual Studio Code · Shipped via GitHub &amp; GitLab
                     </span>
                     <span className="font-mono text-[#15803D] tabular-nums">
                       No vendor lock-in
